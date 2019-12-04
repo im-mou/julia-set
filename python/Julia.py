@@ -31,9 +31,11 @@ def calc_pure_python(desired_width, max_iterations):
     for xcoord in x:
       zs.append(complex(xcoord, ycoord))
       cs.append(complex(c_real, c_imag))
+      print(xcoord,ycoord)
 
-  print("Length of x:", len(x))
-  print("Total elements:", len(zs))
+
+  # print("Length of x:", len(x))
+  # print("Total elements:", len(zs))
   output = calculate_z(max_iterations, zs, cs)
 
   print("output= ", sum(output))
@@ -59,5 +61,5 @@ def calculate_z(maxiter, zs, cs):
 
 if __name__ == "__main__":
   # Calculate the Julia set using a pure Python solution
-  calc_pure_python(desired_width=1000, max_iterations=1)
+  calc_pure_python(desired_width=5, max_iterations=1)
 
