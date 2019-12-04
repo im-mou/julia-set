@@ -11,24 +11,15 @@ def calc_pure_python(desired_width, max_iterations):
   x = []
   y = []
 
-  total_ycoord = 0
   ycoord = y2
   while ycoord > y1:
     y.append(ycoord)
     ycoord += y_step
-    total_ycoord+=1
-  print("y=", total_ycoord)
-  # print("y[]", y)
 
-  total_xcoord = 0
   xcoord = x1
   while xcoord < x2:
     x.append(xcoord)
     xcoord += x_step
-    total_xcoord+=1
-    print("xcoord: ", xcoord)
-
-  # print("x[]", x)
 
   # Build a list of coordinates and the initial condition for each cell.
   # Note that our initial condition is a constant and could easily be removed;
@@ -68,5 +59,5 @@ def calculate_z(maxiter, zs, cs):
 
 if __name__ == "__main__":
   # Calculate the Julia set using a pure Python solution
-  calc_pure_python(desired_width=10, max_iterations=1)
+  calc_pure_python(desired_width=1000, max_iterations=1)
 

@@ -6,27 +6,28 @@
 #include <assert.h>
 
 //area of complex space to investigate
-float X1 = -1.8;
-float X2 = 1.8;
-float Y1 = -1.8;
-float Y2 = 1.8;
-float c_real = -0.62772;
-float c_imag = -0.42193;
+double X1 = -1.8;
+double X2 = 1.8;
+double Y1 = -1.8;
+double Y2 = 1.8;
+double c_real = -0.62772;
+double c_imag = -0.42193;
 
-int * calculate_z(int maxiter, int width, float complex *zs, float complex *cs) {
+int * calculate_z(int maxiter, int width, double complex *zs, double complex *cs) {
   //Calculate output list using Julia update rule
   int n;
-  float complex z, c, aux;
-  int *output = (int *)calloc(width, sizeof(int));
+  double complex z, c, aux;
+  double two = 2.0;
+  int *output = (int *)calloc(width+1, sizeof(int));
 
   for (int i = 0; i < width; i++)
   {
     n = 0;
     z = zs[i];
     c = cs[i];
-    while (cabsf(z) < 2 && n < maxiter) {
-      z = z * z + c;
-      n += 1;
+    while (cabs(z) < two && n < maxiter) {
+      z = (z * z) + c;
+      n = n + 1;
     }
     output[i] = n;
   }
@@ -36,7 +37,7 @@ int * calculate_z(int maxiter, int width, float complex *zs, float complex *cs) 
 int sum(int *array, int width){
   int output_sum = 0;
   for (int i = 0; i < width; i++)
-      output_sum += array[i];
+      output_sum = output_sum + array[i];
 
   return output_sum;
 }
@@ -44,30 +45,30 @@ int sum(int *array, int width){
 void calc_pure_c(int desired_width, int max_iterations)
 {
   //Create a list of complex coordinates (zs) and complex parameters (cs), build Julia set, and display
-  float x_step = (X2 - X1) / desired_width;
-  float y_step = (Y1 - Y2) / desired_width;
+  double x_step = (X2 - X1) / (double) desired_width;
+  double y_step = (Y1 - Y2) / (double) desired_width;
 
-  float *x = (float *)malloc((desired_width+100) * sizeof(float));
-  float *y = (float *)malloc((desired_width+100) * sizeof(float));
-  float complex *zs = (float complex *)malloc((desired_width) * sizeof(float complex));
-  float complex *cs = (float complex *)malloc((desired_width) * sizeof(float complex));
+  double *x = (double *)malloc((desired_width+1) * sizeof(double));
+  double *y = (double *)malloc((desired_width+1) * sizeof(double));
+  double complex *zs = (double complex *)malloc((desired_width+1) * sizeof(double complex));
+  double complex *cs = (double complex *)malloc((desired_width+1) * sizeof(double complex));
   
   int total_elements = 0;
   int *output;
   int _iy = 0, _ix = 0;
 
-  float ycoord = Y2;
+  double ycoord = Y2;
   // for (int i = 0; i < desired_width; i++) {
   //   y[i] = ycoord;
   //   ycoord += y_step;
   // }
   while (ycoord > Y1) {
     y[_iy] = ycoord;
-    ycoord += y_step;
+    ycoord = ycoord + y_step;
     _iy++;
   }
 
-  float xcoord = X1;
+  double xcoord = X1;
   // for (int i = 0; i < desired_width; i++) {
   //   x[i] = xcoord;
   //   xcoord += x_step;
@@ -76,9 +77,9 @@ void calc_pure_c(int desired_width, int max_iterations)
   // suma interna del bucle no es muy precisa.
   while (xcoord < X2) {
     x[_ix] = xcoord;
-    xcoord += x_step;
+    xcoord = xcoord + x_step;
     _ix++;
-    printf("xcoord: %f",xcoord);
+    // printf("xcoord: %f\n",xcoord);
   }
 
   // Build a list of coordinates and the initial condition for each cell.
@@ -93,14 +94,14 @@ void calc_pure_c(int desired_width, int max_iterations)
   }
 
   printf("Length of x:%d\n", _ix);
-  printf("Total elements:%d\n", desired_width * desired_width);
-  output = calculate_z(max_iterations, desired_width, zs, cs);
+  printf("Total elements:%d\n", _iy * _ix);
+  output = calculate_z(max_iterations, _iy, zs, cs);
 
   // This sum is expected for a 1000^2 grid with 300 iterations.
   // It catches minor errors we might introduce when were
   // working on a fixed set of inputs.
   // assert(sum(output,desired_width) == 33219980);
-  printf("output: %d\n", sum(output,desired_width));
+  printf("output: %d\n", sum(output, _iy));
 
 };
 
