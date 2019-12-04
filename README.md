@@ -7,18 +7,28 @@ The Julia set is a fractal sequence that generates a complex output image, named
 ### Python
 To run the python implementation of the code, run the following commands in your terminal:
 
-<code>
-python Julia.py
-</code>
+```console
+user:julia-set$ python Julia.py
+```
+
+### Cython
+To compile and run cython code, run the following commands in your terminal:
+
+```console
+user:julia-set$ cythonize -3 -i -a cython/Julia.pyx
+user:julia-set$ ipython
+
+> import Julia as J
+> J.run(<size>,<iterations>)
+```
 
 ### C
 To compile the C code, run the following commands in your terminal:
 
-<code>
-gcc -Ofast Julia.c -o Julia
-
-./Julia `<size>` `<iterations>` 
-</code>
+```console
+user:julia-set$ gcc -Ofast Julia.c -o Julia
+user:julia-set$ ./Julia <size> <iterations> 
+```
 
 ## Authors
 Mohsin Riaz [github@im-mou](https://github.com/im-mou/)
