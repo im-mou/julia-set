@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <complex.h>    /* Standard Library of Complex Numbers */
+#include <complex.h>
 #include <assert.h>
 
 //area of complex space to investigate
@@ -25,10 +25,8 @@ int * calculate_z(int maxiter, int width, double complex *zs, double complex *cs
     n = 0;
     z = zs[i];
     c = cs[i];
-    csq = sqrt(pow(creal(z),2) + pow(cimag(z),2));
-    calc = (csq < two);
-    while (calc && n < maxiter) {
-      z = cpow(z,z) + c;
+    while (cabs(z) < 2.0 && n < maxiter) {
+      z = (z*z) + c;
       n += 1;
     }
     output[i] = n;
@@ -52,51 +50,53 @@ void calc_pure_c(int desired_width, int max_iterations)
 
   double *x = (double *)malloc((desired_width+1) * sizeof(double));
   double *y = (double *)malloc((desired_width+1) * sizeof(double));
-  double complex *zs = (double complex *)malloc((desired_width+1) * sizeof(double complex));
-  double complex *cs = (double complex *)malloc((desired_width+1) * sizeof(double complex));
-  
+ 
   int total_elements = 0;
   int *output;
   int size_y = 0, size_x = 0;
 
   double ycoord = Y2;
+  double xcoord = X1;
+
+
   while (ycoord > Y1) {
     y[size_y] = ycoord;
     ycoord = ycoord + y_step;
     size_y++;
   }
 
-  double xcoord = X1;
-  // @ToDo: En comparacion al codigo python, la precision de la 
   // suma interna del bucle no es muy precisa.
   while (xcoord < X2) {
     x[size_x] = xcoord;
     xcoord = xcoord + x_step;
     size_x++;
-    // printf("xcoord: %f\n",xcoord);
   }
 
+  double complex *zs = (double complex *)malloc((size_x * size_y) * sizeof(double complex));
+  double complex *cs = (double complex *)malloc((size_x * size_y) * sizeof(double complex));
+ 
   // Build a list of coordinates and the initial condition for each cell.
   // Note that our initial condition is a constant and could easily be removed;
   // we use it to simulate a real-world scenario with several inputs to
   // our function.
+  int k = 0;
   for (int i = 0; i < size_y; i++) {
     for (int j = 0; j < size_x; j++) {
-      zs[i] = x[j] + y[i]*I;
-      cs[i] = c_real + c_imag*I;
-      printf("%f, %f\n", x[j], y[i]);
+      zs[k] = x[j] + y[i]*I;
+      cs[k] = c_real + c_imag*I;
+	  k++;
     }
   }
 
-  // printf("Length of x:%d\n", size_x);
-  // printf("Total elements:%d\n", size_y * size_x);
-  output = calculate_z(max_iterations, size_y, zs, cs);
+  printf("Length of x:%d\n", size_x);
+  printf("Total elements:%d\n", size_y * size_x);
+  output = calculate_z(max_iterations, (size_y*size_x), zs, cs);
 
   // This sum is expected for a 1000^2 grid with 300 iterations.
   // It catches minor errors we might introduce when were
   // working on a fixed set of inputs.
-  // assert(sum(output,desired_width) == 33219980);
-  printf("output: %d\n", sum(output, size_y));
+  assert(sum(output, (size_y*size_x)) == 33219980);
+  //printf("output: %d\n", sum(output, (size_y*size_x)));
 
 };
 
