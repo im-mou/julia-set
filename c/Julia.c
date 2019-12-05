@@ -37,7 +37,7 @@ int * calculate_z(int maxiter, int width, double complex *zs, double complex *cs
 int sum(int *array, int width){
   int output_sum = 0;
   for (int i = 0; i < width; i++)
-      output_sum = output_sum + array[i];
+      output_sum += array[i];
 
   return output_sum;
 }
@@ -61,14 +61,13 @@ void calc_pure_c(int desired_width, int max_iterations)
 
   while (ycoord > Y1) {
     y[size_y] = ycoord;
-    ycoord = ycoord + y_step;
+    ycoord += y_step;
     size_y++;
   }
 
-  // suma interna del bucle no es muy precisa.
   while (xcoord < X2) {
     x[size_x] = xcoord;
-    xcoord = xcoord + x_step;
+    xcoord += x_step;
     size_x++;
   }
 
@@ -79,12 +78,10 @@ void calc_pure_c(int desired_width, int max_iterations)
   // Note that our initial condition is a constant and could easily be removed;
   // we use it to simulate a real-world scenario with several inputs to
   // our function.
-  int k = 0;
   for (int i = 0; i < size_y; i++) {
     for (int j = 0; j < size_x; j++) {
-      zs[k] = x[j] + y[i]*I;
-      cs[k] = c_real + c_imag*I;
-	  k++;
+      zs[(i*size_x) + j] = x[j] + y[i]*I;
+      cs[(i*size_x) + j] = c_real + c_imag*I;
     }
   }
 
