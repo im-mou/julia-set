@@ -157,7 +157,7 @@ void write_image(int size_x, int size_y, int iter, int *output_array)
 	//stbi_write_bmp("output/image.bmp", size_x, size_y, 3, img_rgb);
 	//stbi_write_jpg("output/image.jpg", size_x, size_y, 3, img_rgb, 95);
 
-	printf("output/image.png generated Successfully!\n");
+	printf("output/image.png generateds Successfully!\n");
 }
 
 int main(int argc, char **argv)
