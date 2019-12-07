@@ -4,3 +4,6 @@ c/output
 c/Julia
 c/perf.data
 c/perf.data.old
+cython/*.so
+cython/*.html
+cython/*.c
