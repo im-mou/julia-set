@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <complex.h>
 #include <assert.h>
+#include <omp.h>
 
 //area of complex space to investigate
 double X1 = -1.8;
@@ -18,22 +19,16 @@ int * calculate_z(int maxiter, int width, double complex *zs, double complex *cs
 	int n;
 	double complex z, c;
 	int *output = (int *)calloc(width, sizeof(int));
-
+	double abs = 0;
 	for (int i = 0; i < width; i++) {
 		n = 0;
 		z = zs[i];
 		c = cs[i];
-		for(int j = 0; j < maxiter; j++){
-			if( cabs(z) < 2.0 ) {
-				z = (z*z) + c;
-				n += 1;
-			} else
-				break;
-		}
-//		while (cabs(z) < 2.0 && n < maxiter) {
-//		  z = (z*z) + c;
-//		  n += 1;
-//		}
+		while (cabs(z) < 2.0 && n < maxiter) {
+			z *= z;
+			z += c;
+			n += 1;
+		};
 		output[i] = n;
 	}
 	return output;
