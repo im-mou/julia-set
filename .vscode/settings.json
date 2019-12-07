@@ -24,7 +24,7 @@
         "type_traits": "c",
         "limits": "c",
         "memory": "c",
-        "ratio": "c",
-        "tuple": "c"
+        "tuple": "c",
+        "ratio": "c"
     }
 }
