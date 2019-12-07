@@ -23,23 +23,24 @@ double c_imag = -0.42193;
 int size_y = 0;
 int size_x = 0;
 
-int *calculate_z(int maxiter, int width, double complex *zs, double complex *cs)
+int *calculate_z(int maxiter, int width, double complex *zs)
 {
 	//Calculate output list using Julia update rule
 	int n;
-	double complex z, c;
+	double complex z, c = c_real + c_imag * I;
 	int *output = (int *)calloc(width, sizeof(int));
 	double abs = 0;
 	for (int i = 0; i < width; i++)
 	{
 		n = 0;
 		z = zs[i];
-		c = cs[i];
-		while (cabs(z) < 2.0 && n < maxiter)
+		abs = (creal(z)*creal(z)) + (cimag(z)*cimag(z));
+		while ( abs < 4.0 && n < maxiter)
 		{
 			z *= z;
 			z += c;
 			n += 1;
+			abs = (creal(z)*creal(z)) + (cimag(z)*cimag(z));
 		};
 		output[i] = n;
 	}
@@ -60,7 +61,7 @@ int sum(int *output_array, int width)
 int *calc_pure_c(int desired_width, int max_iterations)
 {
 
-	// Create a list of complex coordinates (zs) and complex parameters (cs),
+	// Create a list of complex coordinates (zs),
 	// build Julia set, and display
 	double x_step = (X2 - X1) / (double)desired_width;
 	double y_step = (Y1 - Y2) / (double)desired_width;
@@ -68,7 +69,6 @@ int *calc_pure_c(int desired_width, int max_iterations)
 	double *x = (double *)malloc((desired_width + 1) * sizeof(double));
 	double *y = (double *)malloc((desired_width + 1) * sizeof(double));
 
-	int total_elements = 0;
 	int *output;
 
 	double ycoord = Y2;
@@ -89,32 +89,26 @@ int *calc_pure_c(int desired_width, int max_iterations)
 	}
 
 	double complex *zs = (double complex *)malloc((size_x * size_y) * sizeof(double complex));
-	double complex *cs = (double complex *)malloc((size_x * size_y) * sizeof(double complex));
 
 	// Build a list of coordinates and the initial condition for each cell.
 	// Note that our initial condition is a constant and could easily be removed;
 	// we use it to simulate a real-world scenario with several inputs to
 	// our function
-	double complex fixed_val = c_real + c_imag * I;
-	double complex temp;
+	double complex imag_part;
 	for (int i = 0; i < size_y; i++)
 	{
-		temp = y[i] * I;
+		imag_part = y[i] * I;
 		for (int j = 0; j < size_x; j++)
 		{
-			zs[(i * size_x) + j] = x[j] + temp;
+			zs[(i * size_x) + j] = x[j] + imag_part;
 		}
 	}
 
-	for (int i = 0; i < size_x * size_y; i++)
-	{
-		cs[i] = fixed_val;
-	}
 	printf("Length of x:%d\n", size_x);
 	printf("Total elements:%d\n", size_y * size_x);
 
 	// calcular la Z
-	output = calculate_z(max_iterations, (size_y * size_x), zs, cs);
+	output = calculate_z(max_iterations, (size_y * size_x), zs);
 
 	// This sum is expected for a 1000^2 grid with 300 iterations.
 	// It catches minor errors we might introduce when were
@@ -179,16 +173,15 @@ int main(int argc, char **argv)
 		generate_image = atoi(argv[3]);
 	}
 
+	// image max size limit
+	if(generate_image)
+		assert(desired_width <= 1670);
+
 	// Calculate the Julia set using a pure C solution
 	output = calc_pure_c(desired_width, max_iterations);
 
 	//generate output image
-	if (generate_image){
-		// tamaño maximo para la imagen
-		if(desired_width > 1670) {
-			printf("\nERR: Max image size permited 1670x1670 \n");
-		} else {
-			write_image(size_x, size_y, max_iterations, output);
-		}
+	if (generate_image) {
+		write_image(size_x, size_y, max_iterations, output);
 	}
 }
