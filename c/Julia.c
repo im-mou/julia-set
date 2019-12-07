@@ -185,8 +185,9 @@ int main(int argc, char **argv)
 	//generate output image
 	if (generate_image){
 		if(desired_width > 1670) {
-			printf("Max image size permited 1670x1670 \n");
+			printf("\nERR: Max image size permited 1670x1670 \n");
+		} else {
+			write_image(size_x, size_y, max_iterations, output);
 		}
-		write_image(size_x, size_y, max_iterations, output);
 	}
 }
