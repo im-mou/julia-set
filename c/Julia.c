@@ -10,7 +10,7 @@
 
 #define STB_IMAGE_WRITE_STATIC
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include "lib/stb_image_write.h"
 
 //area of complex space to investigate
 double X1 = -1.8;

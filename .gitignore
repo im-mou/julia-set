@@ -1,1 +1,6 @@
+.vscode/
 .vscode/settings.json
+c/output
+c/Julia
+c/perf.data
+c/perf.data.old

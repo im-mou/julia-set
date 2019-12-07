@@ -10,7 +10,7 @@ To compile the C code, run the following commands in your terminal:
 
 ```console
 user:julia-set$ gcc -Ofast Julia.c -o Julia
-user:julia-set$ ./Julia <[int]size> <[int]iterations> <[int 0|1]Output Image>
+user:julia-set$ ./Julia <(int) size> <(int) iterations> <(int)[0|1] Output Image>
 ```
 
 ### Python
