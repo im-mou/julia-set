@@ -29,21 +29,29 @@ int *calculate_z(int maxiter, int width, double complex *zs)
 	int n;
 	double complex z, c = c_real + c_imag * I;
 	int *output = (int *)calloc(width, sizeof(int));
-	double abs = 0;
+	double zreal, zimag, zreal2, zimag2;
 	for (int i = 0; i < width; i++)
 	{
 		n = 0;
 		z = zs[i];
-		abs = (creal(z)*creal(z)) + (cimag(z)*cimag(z));
-		while ( abs < 4.0 && n < maxiter)
+		zreal = creal(z);
+		zimag = cimag(z);
+
+		//printf("%f+%fi",zimag,zimag);
+		zreal2 = zreal * zreal;
+		zimag2 = zimag * zimag;
+		while (zimag2 + zreal2 <= 4.0 && n < maxiter)
 		{
-			z *= z;
-			z += c;
+			//z = (z*z)+c;
+			zimag = 2 * zimag * zreal + c_imag;
+			zreal = zreal2 - zimag2 + c_real;
+			zreal2 = zreal * zreal;
+			zimag2 = zimag * zimag;
 			n += 1;
-			abs = (creal(z)*creal(z)) + (cimag(z)*cimag(z));
 		};
 		output[i] = n;
 	}
+	//printf(" -> output:%d\n",output[i]);
 	return output;
 };
 
@@ -113,7 +121,7 @@ int *calc_pure_c(int desired_width, int max_iterations)
 	// This sum is expected for a 1000^2 grid with 300 iterations.
 	// It catches minor errors we might introduce when were
 	// working on a fixed set of inputs.
-	//assert(sum(output, (size_y*size_x)) == 33219980);
+	assert(sum(output, (size_y * size_x)) == 33219980);
 	printf("Sum:%d\n", sum(output, (size_y * size_x)));
 
 	return output;
@@ -174,14 +182,15 @@ int main(int argc, char **argv)
 	}
 
 	// image max size limit
-	if(generate_image)
+	if (generate_image)
 		assert(desired_width <= 1670);
 
 	// Calculate the Julia set using a pure C solution
 	output = calc_pure_c(desired_width, max_iterations);
 
 	//generate output image
-	if (generate_image) {
+	if (generate_image)
+	{
 		write_image(size_x, size_y, max_iterations, output);
 	}
 }
