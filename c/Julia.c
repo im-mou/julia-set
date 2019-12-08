@@ -4,13 +4,7 @@
 #include <stdlib.h>
 #include <complex.h>
 #include <assert.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-#define STB_IMAGE_WRITE_STATIC
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "lib/stb_image_write.h"
+#include "lib/image_generator.h"
 
 //area of complex space to investigate
 double X1 = -1.8;
@@ -29,29 +23,18 @@ int *calculate_z(int maxiter, int width, double complex *zs)
 	int n;
 	double complex z, c = c_real + c_imag * I;
 	int *output = (int *)calloc(width, sizeof(int));
-	double zreal, zimag, zreal2, zimag2;
+
 	for (int i = 0; i < width; i++)
 	{
 		n = 0;
 		z = zs[i];
-		zreal = creal(z);
-		zimag = cimag(z);
-
-		//printf("%f+%fi",zimag,zimag);
-		zreal2 = zreal * zreal;
-		zimag2 = zimag * zimag;
-		while (zimag2 + zreal2 <= 4.0 && n < maxiter)
+		while (cabs(z) <= 2.0 && n < maxiter)
 		{
-			//z = (z*z)+c;
-			zimag = 2 * zimag * zreal + c_imag;
-			zreal = zreal2 - zimag2 + c_real;
-			zreal2 = zreal * zreal;
-			zimag2 = zimag * zimag;
+			z = (z * z) + c;
 			n += 1;
 		};
 		output[i] = n;
 	}
-	//printf(" -> output:%d\n",output[i]);
 	return output;
 };
 
@@ -96,6 +79,8 @@ int *calc_pure_c(int desired_width, int max_iterations)
 		size_x++;
 	}
 
+	// una vez calculado los tamaños de las matrices, creamos la matriz
+	// para las coor. en plano complejo
 	double complex *zs = (double complex *)malloc((size_x * size_y) * sizeof(double complex));
 
 	// Build a list of coordinates and the initial condition for each cell.
@@ -121,50 +106,15 @@ int *calc_pure_c(int desired_width, int max_iterations)
 	// This sum is expected for a 1000^2 grid with 300 iterations.
 	// It catches minor errors we might introduce when were
 	// working on a fixed set of inputs.
-	assert(sum(output, (size_y * size_x)) == 33219980);
+	//assert(sum(output, (size_y * size_x)) == 33219980);
 	printf("Sum:%d\n", sum(output, (size_y * size_x)));
 
 	return output;
 };
 
-// funcio para crear una imagen
-// Ref: https://github.com/nothings/stb/blob/master/tests/image_write_test.c
-void write_image(int size_x, int size_y, int iter, int *output_array)
-{
-	// make a RGB version of the template image
-	unsigned char img_rgb[size_x * size_y * 3];
-	int i;
-
-	// crear directorio output si no exsiste
-	struct stat st = {0};
-
-	if (stat("./output", &st) == -1)
-	{
-		mkdir("./output", 0700);
-		printf("Created new \"output\" directory\n");
-	}
-
-	// generar pixeles de la imagen
-	printf("Generating \"output/image.png\" image...\n");
-	for (i = 0; i < size_x * size_y; i++)
-	{
-		int rgb_val = ceil((output_array[i] / iter) * 255);
-		img_rgb[i * 3 + 0] = rgb_val;
-		img_rgb[i * 3 + 1] = rgb_val;
-		img_rgb[i * 3 + 2] = rgb_val;
-	}
-
-	// generar el output de la imagen
-	stbi_write_png("output/image.png", size_x, size_y, 3, img_rgb, size_x * 3);
-	//stbi_write_bmp("output/image.bmp", size_x, size_y, 3, img_rgb);
-	//stbi_write_jpg("output/image.jpg", size_x, size_y, 3, img_rgb, 95);
-
-	printf("output/image.png generateds Successfully!\n");
-}
-
 int main(int argc, char **argv)
 {
-	int desired_width = 1000, max_iterations = 300, generate_image = 0;
+	int desired_width = 1000, max_iterations = 300, image = 0;
 	int *output;
 
 	// obtener argumentos proporcionados en tiempo de ejecucion
@@ -178,19 +128,19 @@ int main(int argc, char **argv)
 	}
 	if (argc > 3)
 	{
-		generate_image = atoi(argv[3]);
+		image = atoi(argv[3]);
 	}
 
 	// image max size limit
-	if (generate_image)
+	if (image)
 		assert(desired_width <= 1670);
 
 	// Calculate the Julia set using a pure C solution
 	output = calc_pure_c(desired_width, max_iterations);
 
 	//generate output image
-	if (generate_image)
+	if (image)
 	{
-		write_image(size_x, size_y, max_iterations, output);
+		generate_image(size_x, size_y, max_iterations, output);
 	}
 }
