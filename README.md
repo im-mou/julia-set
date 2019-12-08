@@ -1,3 +1,5 @@
+<p align="center"><img src="https://user-images.githubusercontent.com/7409436/70395873-af825600-1a03-11ea-9ffc-a49d5f766bac.png" width="200"></p>
+
 # An optimization proposal for Julia Set sequence
 ## About Julia Set
 
