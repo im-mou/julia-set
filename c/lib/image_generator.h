@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <time.h>
 
 // Ref: https://github.com/nothings/stb/blob/master/tests/image_write_test.c
 #define STB_IMAGE_WRITE_STATIC
@@ -12,6 +13,7 @@
 // funcion para generar un array con colores aleatorios en formato RGB
 unsigned int * rgb_array(int iter)
 {
+    srand(time(0));
     unsigned int * _rbg_ouput = (unsigned int *)malloc((iter * 3) * sizeof(unsigned int));
     for (int i = 0; i < iter; i++)
     {
@@ -56,5 +58,5 @@ void generate_image(int size_x, int size_y, int iter, int *output_array)
 	//stbi_write_bmp("output/image.bmp", size_x, size_y, 3, rgb_pixel);
 	//stbi_write_jpg("output/image.jpg", size_x, size_y, 3, img_rgb, 95);
 
-	printf("output/image.png generateds Successfully!\n");
+	printf("output/image.png generated Successfully!\n");
 }

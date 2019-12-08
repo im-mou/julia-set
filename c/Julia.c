@@ -23,18 +23,29 @@ int *calculate_z(int maxiter, int width, double complex *zs)
 	int n;
 	double complex z, c = c_real + c_imag * I;
 	int *output = (int *)calloc(width, sizeof(int));
-
+	double zreal, zimag, zreal2, zimag2;
 	for (int i = 0; i < width; i++)
 	{
 		n = 0;
 		z = zs[i];
-		while (cabs(z) <= 2.0 && n < maxiter)
+		zreal = creal(z);
+		zimag = cimag(z);
+
+		//printf("%f+%fi",zimag,zimag);
+		zreal2 = zreal * zreal;
+		zimag2 = zimag * zimag;
+		while (zimag2 + zreal2 <= 4.0 && n < maxiter)
 		{
-			z = (z * z) + c;
+			//z = (z*z)+c;
+			zimag = 2 * zimag * zreal + c_imag;
+			zreal = zreal2 - zimag2 + c_real;
+			zreal2 = zreal * zreal;
+			zimag2 = zimag * zimag;
 			n += 1;
 		};
 		output[i] = n;
 	}
+	//printf(" -> output:%d\n",output[i]);
 	return output;
 };
 
