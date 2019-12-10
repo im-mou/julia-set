@@ -1,4 +1,4 @@
-<p align="center"><img src="https://user-images.githubusercontent.com/7409436/70395873-af825600-1a03-11ea-9ffc-a49d5f766bac.png" width="200"></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/7409436/70395873-af825600-1a03-11ea-9ffc-a49d5f766bac.png" width="400"></p>
 
 # An optimization proposal for Julia Set sequence
 ## About Julia Set
@@ -11,23 +11,23 @@ The Julia set is a fractal sequence that generates a complex output image, named
 To compile the C code, run the following commands in your terminal:
 
 ```console
-user:julia-set$ gcc -Ofast Julia.c -o Julia
-user:julia-set$ ./Julia <(int) size> <(int) iterations> <(int)[0|1] Output Image>
+$ gcc -Ofast Julia.c -o Julia
+$ ./Julia <(int) size> <(int) iterations> <(int)[0|1] Output Image>
 ```
 
 ### Python
 To run the python implementation of the code, run the following commands in your terminal:
 
-```console
-user:julia-set$ python Julia.py
+```sh
+$ python Julia.py
 ```
 
 ### Cython
 To compile and run cython code, run the following commands in your terminal:
 
-```console
-user:julia-set$ cythonize -3 -i -a cython/Julia.pyx
-user:julia-set$ ipython
+```sh
+$ cythonize -3 -i -a cython/Julia.pyx
+$ ipython
 
 > import Julia as J
 > J.run(<size>,<iterations>)

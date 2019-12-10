@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 	{
 		image = atoi(argv[3]);
 	}
-
+	
 	// image max size limit
 	if (image)
 		assert(desired_width <= 1670);
@@ -152,6 +152,6 @@ int main(int argc, char **argv)
 	//generate output image
 	if (image)
 	{
-		generate_image(size_x, size_y, max_iterations, output);
+		generate_image(size_x, size_y, max_iterations, output, image);
 	}
 }
