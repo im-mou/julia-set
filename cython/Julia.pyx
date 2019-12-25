@@ -87,3 +87,4 @@ cdef int [::1] calculate_z(int maxiter,int width, double complex [::1] zs):
 
 def run (desired_width=1000, max_iterations=300):
   calc_cython(desired_width, max_iterations)
+
