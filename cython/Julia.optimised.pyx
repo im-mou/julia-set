@@ -75,12 +75,20 @@ cdef int [::1] calculate_z(int maxiter,int width, double complex [::1] zs):
   """Calculate output list using Julia update rule"""
   cdef int [::1] output = np.zeros([width],dtype=np.int32)
   cdef int i,n=0
+  cdef double real, imag, r2,i2
   cdef double complex z
   for i in range(len(zs)):
     n = 0
     z = zs[i]
-    while abs(z) <= 2 and n < maxiter:
-      z = z * z + c
+    real = z.real
+    imag = z.imag
+    r2 = real*real
+    i2 = imag*imag
+    while i2 + r2 <= 4 and n < maxiter:
+      imag = 2*real*imag + c_imag
+      real = r2 - i2 + c_real
+      r2 = real*real
+      i2 = imag*imag
       n += 1
     output[i] = n
   return output

@@ -26,17 +26,14 @@ def calc_pure_python(desired_width, max_iterations):
   # we use it to simulate a real-world scenario with several inputs to
   # our function.
   zs = []
-  cs = []
   for ycoord in y:
     for xcoord in x:
       zs.append(complex(xcoord, ycoord))
-      cs.append(complex(c_real, c_imag))
-      print(xcoord,ycoord)
 
 
   # print("Length of x:", len(x))
   # print("Total elements:", len(zs))
-  output = calculate_z(max_iterations, zs, cs)
+  output = calculate_z(max_iterations, zs)
 
   print("output= ", sum(output))
 
@@ -45,21 +42,19 @@ def calc_pure_python(desired_width, max_iterations):
   # working on a fixed set of inputs.
   # assert sum(output) == 33219980
 
-def calculate_z(maxiter, zs, cs):
+def calculate_z(maxiter, zs):
   """Calculate output list using Julia update rule"""
+  c = complex(c_real, c_imag)
   output = [0] * len(zs)
   for i in range(len(zs)):
     n = 0
     z = zs[i]
-    c = cs[i]
     while abs(z) < 2 and n < maxiter:
       z = z * z + c
       n += 1
-    # print("n= ", n)
     output[i] = n
   return output
 
 if __name__ == "__main__":
   # Calculate the Julia set using a pure Python solution
-  calc_pure_python(desired_width=5, max_iterations=1)
-
+  calc_pure_python(desired_width=5000, max_iterations=300)

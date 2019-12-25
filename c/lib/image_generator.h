@@ -58,9 +58,11 @@ void generate_image(int size_x, int size_y, int iter, int *output_array, int ima
 	printf("Generating \"output/image.png\" image...\n");
 	for (int i = 0; i < size_x * size_y; i++)
 	{
-		rgb_pixel[i * 3 + 0] = rgb_colors[(output_array[i]*3) + 0];
-		rgb_pixel[i * 3 + 1] = rgb_colors[(output_array[i]*3) + 1];
-		rgb_pixel[i * 3 + 2] = rgb_colors[(output_array[i]*3) + 2];
+		//if(output_array[i]==2){
+			rgb_pixel[i * 3 + 0] = rgb_colors[(output_array[i]*3) + 0];
+			rgb_pixel[i * 3 + 1] = rgb_colors[(output_array[i]*3) + 1];
+			rgb_pixel[i * 3 + 2] = rgb_colors[(output_array[i]*3) + 2];
+		//}
 	}
 
 	// generar el output de la imagen en el formato deseado

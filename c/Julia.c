@@ -17,35 +17,30 @@ double c_imag = -0.42193;
 int size_y = 0;
 int size_x = 0;
 
-int *calculate_z(int maxiter, int width, double complex *zs)
+int *calculate_z(int maxiter, int size_x, int size_y, double complex *zs)
 {
 	//Calculate output list using Julia update rule
 	int n;
 	double complex z, c = c_real + c_imag * I;
-	int *output = (int *)calloc(width, sizeof(int));
-	double zreal, zimag, zreal2, zimag2;
-	for (int i = 0; i < width; i++)
+	int *output = (int *)malloc((size_x * size_y) * sizeof(int));
+
+	// int syh = size_y/2;
+	// int upper_last = 0;
+	// int lower_last = 0;
+	for (int i = 0; i < size_x * size_y; i++)
 	{
 		n = 0;
 		z = zs[i];
-		zreal = creal(z);
-		zimag = cimag(z);
-
-		//printf("%f+%fi",zimag,zimag);
-		zreal2 = zreal * zreal;
-		zimag2 = zimag * zimag;
-		while (zimag2 + zreal2 <= 4.0 && n < maxiter)
+		while (cabs(z) <= 2.0 && n < maxiter)
 		{
-			//z = (z*z)+c;
-			zimag = 2 * zimag * zreal + c_imag;
-			zreal = zreal2 - zimag2 + c_real;
-			zreal2 = zreal * zreal;
-			zimag2 = zimag * zimag;
+			z = z * z + c;
 			n += 1;
 		};
 		output[i] = n;
+
 	}
-	//printf(" -> output:%d\n",output[i]);
+	//printf("upper:%d, lower:%d\n", upper_last, lower_last);
+
 	return output;
 };
 
@@ -112,7 +107,7 @@ int *calc_pure_c(int desired_width, int max_iterations)
 	printf("Total elements:%d\n", size_y * size_x);
 
 	// calcular la Z
-	output = calculate_z(max_iterations, (size_y * size_x), zs);
+	output = calculate_z(max_iterations, size_y, size_x, zs);
 
 	// This sum is expected for a 1000^2 grid with 300 iterations.
 	// It catches minor errors we might introduce when were
@@ -141,7 +136,7 @@ int main(int argc, char **argv)
 	{
 		image = atoi(argv[3]);
 	}
-	
+
 	// image max size limit
 	if (image)
 		assert(desired_width <= 1670);
