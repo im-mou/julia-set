@@ -1,6 +1,6 @@
 <p align="center"><img src="https://user-images.githubusercontent.com/7409436/70395873-af825600-1a03-11ea-9ffc-a49d5f766bac.png" width="400"></p>
 
-# An optimization proposal for Julia Set sequence
+# An analysis of Julia Set sequence algorithm
 ## About Julia Set
 
 The Julia set is a fractal sequence that generates a complex output image, named after Gaston Julia. It is an interesting CPU-bound problem with a very explicit set of inputs, which allows us to profile both the CPU usage and the RAM usage so we can understand which parts of our code are consuming two of our scarce computing resources.

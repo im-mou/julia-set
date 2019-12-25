@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <complex.h>
 #include <assert.h>
-#include "lib/image_generator.h"
 
 //area of complex space to investigate
 double X1 = -1.8;
@@ -17,23 +16,44 @@ double c_imag = -0.42193;
 int size_y = 0;
 int size_x = 0;
 
-int *calculate_z(int maxiter, int size_x, int size_y, double complex *zs)
+// creamos esta definicion para que ACC pueda interpretar la funcion
+double _cabs(double complex num)
 {
-	//Calculate output list using Julia update rule
-	int n;
-	double complex z, c = c_real + c_imag * I;
-	int *output = (int *)malloc((size_x * size_y) * sizeof(int));
+	double real, imag, result;
+	real = creal(num);
+	imag = cimag(num);
+	result = (real * real) + (imag * imag);
+	return result;
+}
 
-	for (int i = 0; i < size_x * size_y; i++)
+int *calculate_z(int maxiter, int width, double complex *zs)
+{
+
+	//Calculate output list using Julia update rule
+	//int n;
+	double complex z, c = c_real + c_imag * I;
+	int *output = (int *)calloc(width, sizeof(int));
+//double zreal, zimag, zreal2, zimag2;
+
+//variable para generar el fichero con un histograma
+// de los numeros que se repiten dentro del bucle while
+#pragma acc data copyin(zs[:width])
+#pragma acc data copyout(output[:width])
+#pragma acc kernels
 	{
-		n = 0;
-		z = zs[i];
-		while (cabs(z) <= 2.0 && n < maxiter)
+		int n = 0;
+		for (int i = 0; i < width; i++)
 		{
-			z = z * z + c;
-			n += 1;
-		};
-		output[i] = n;
+			n = 0;
+			z = zs[i];
+
+			while (_cabs(z) <= 4.0 && n < maxiter)
+			{
+				z = (z * z) + c;
+				n += 1;
+			};
+			output[i] = n;
+		}
 	}
 
 	return output;
@@ -102,7 +122,7 @@ int *calc_pure_c(int desired_width, int max_iterations)
 	printf("Total elements:%d\n", size_y * size_x);
 
 	// calcular la Z
-	output = calculate_z(max_iterations, size_y, size_x, zs);
+	output = calculate_z(max_iterations, (size_y * size_x), zs);
 
 	// This sum is expected for a 1000^2 grid with 300 iterations.
 	// It catches minor errors we might introduce when were
@@ -115,8 +135,7 @@ int *calc_pure_c(int desired_width, int max_iterations)
 
 int main(int argc, char **argv)
 {
-	int desired_width = 1000, max_iterations = 300, image = 0;
-	int *output;
+	int desired_width = 1000, max_iterations = 300;
 
 	// obtener argumentos proporcionados en tiempo de ejecucion
 	if (argc > 1)
@@ -127,21 +146,8 @@ int main(int argc, char **argv)
 	{
 		max_iterations = atoi(argv[2]);
 	}
-	if (argc > 3)
-	{
-		image = atoi(argv[3]);
-	}
-
-	// image max size limit
-	if (image)
-		assert(desired_width <= 1670);
-
 	// Calculate the Julia set using a pure C solution
-	output = calc_pure_c(desired_width, max_iterations);
+	calc_pure_c(desired_width, max_iterations);
 
-	//generate output image
-	if (image)
-	{
-		generate_image(size_x, size_y, max_iterations, output, image);
-	}
+	return 0;
 }
