@@ -2,8 +2,12 @@
 .vscode/settings.json
 c/output
 c/Julia
-c/perf.data
-c/perf.data.old
-cython/*.so
-cython/*.html
 cython/*.c
+_*
+*.old
+*.old.*
+*.data
+*.so
+*.html
+*.swp
+*.sub
